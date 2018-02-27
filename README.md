@@ -1,4 +1,3 @@
-// Datapath file
 /* Control word specs
 
 bit 0 -------------EN_ALU
@@ -13,6 +12,13 @@ bits 20 to 24 -----SA
 
 RAM address comes from ALU_output
 
+*/
+
+/* Important Note:
+   
+	Data from the data bus cannot be loaded immediately as
+	to the register when being change. This is due to delay.
+	Wait a few seconds
 */
 
 module Datapath_Testbench();
@@ -62,32 +68,41 @@ module Datapath_Testbench();
 	   #11 ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00000,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b1,
 		                  /*FS*/ 5'b01000,/*C0*/1'b0,/*EN_Mem*/1'b0,/*EN_ALU*/1'b0, /*Bsel*/ 1'b0};
 	// MEM[1] = 1
-		#11 ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00000,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b1,
+		#11 ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00000,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b0,
 		                  /*FS*/ 5'b01000,/*C0*/1'b0,/*EN_Mem*/1'b0,/*EN_ALU*/1'b0, /*Bsel*/ 1'b1};
 			constant = 64'd1;
+		#1  ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00000,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b1,
+		                  /*FS*/ 5'b01000,/*C0*/1'b0,/*EN_Mem*/1'b0,/*EN_ALU*/1'b0, /*Bsel*/ 1'b1};
 							  
 	// MEM[2] = 2
-		#11 ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00000,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b1,
+		#11 ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00000,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b0,
 		                  /*FS*/ 5'b01000,/*C0*/1'b0,/*EN_Mem*/1'b0,/*EN_ALU*/1'b0, /*Bsel*/ 1'b1};
 			 constant = 64'd2;
+		#1  ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00000,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b1,
+		                  /*FS*/ 5'b01000,/*C0*/1'b0,/*EN_Mem*/1'b0,/*EN_ALU*/1'b0, /*Bsel*/ 1'b1};
 
 	// MEM[2] to REG[2]
 		#20 ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00010,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b0,
 		                  /*FS*/ 5'b01000, /*C0*/1'b0,/*EN_Mem*/1'b1,/*EN_ALU*/1'b0, /*Bsel*/ 1'b1};
+								
 		#1 ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00010,/*RegWrite*/ 1'b1,/*MemWrite*/ 1'b0,
+		                  /*FS*/ 5'b01000, /*C0*/1'b0,/*EN_Mem*/1'b1,/*EN_ALU*/1'b0, /*Bsel*/ 1'b1};
+								
+		#11 ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00010,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b0,
 		                  /*FS*/ 5'b01000, /*C0*/1'b0,/*EN_Mem*/1'b1,/*EN_ALU*/1'b0, /*Bsel*/ 1'b1};
 
    // MEM[1] to REG[1]
+      #5 constant = 64'd1;
    	#11  	ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00001,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b0,
 		                  /*FS*/ 5'b01000,/*C0*/1'b0,/*EN_Mem*/1'b1,/*EN_ALU*/1'b0, /*Bsel*/ 1'b1};
-	   #1    constant = 64'd1;
+				
 		#1    ControlWord = {/*SA*/5'b11111, /*SB*/5'b11111,/*DA*/5'b00001,/*RegWrite*/ 1'b1,/*MemWrite*/ 1'b0,
 		                  /*FS*/ 5'b01000,/*C0*/1'b0,/*EN_Mem*/1'b1,/*EN_ALU*/1'b0, /*Bsel*/ 1'b1};
 							
-	// REG[0] -> REG[1] + REG[2];
+	// REG[0] -> REG[1] + REG[2] (2+1)
 		#11  ControlWord = {/*SA*/5'b00010, /*SB*/5'b00001,/*DA*/5'b00000,/*RegWrite*/ 1'b0,/*MemWrite*/ 1'b0,
 		                  /*FS*/ 5'b01000,/*C0*/1'b0,/*EN_Mem*/1'b0,/*EN_ALU*/1'b1, /*Bsel*/ 1'b0};
-		#1   ControlWord = {/*SA*/5'b00010, /*SB*/5'b00001,/*DA*/5'b00000,/*RegWrite*/ 1'b1,/*MemWrite*/ 1'b0,
+		#3   ControlWord = {/*SA*/5'b00010, /*SB*/5'b00001,/*DA*/5'b00000,/*RegWrite*/ 1'b1,/*MemWrite*/ 1'b0,
 		                  /*FS*/ 5'b01000,/*C0*/1'b0,/*EN_Mem*/1'b0,/*EN_ALU*/1'b1, /*Bsel*/ 1'b0};
 		
 		#20 ControlWord = 26'b0;
@@ -121,3 +136,4 @@ module Datapath_Testbench();
 //	assign data = dut.data;
 
 endmodule
+	
